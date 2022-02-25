@@ -1,19 +1,22 @@
-# Analyzing and Improving the Image Quality of Stylegan (CVPR'2020)
+# StyleGANv2
 
-## Introduction
+> [Analyzing and Improving the Image Quality of Stylegan](https://openaccess.thecvf.com/content_CVPR_2020/html/Karras_Analyzing_and_Improving_the_Image_Quality_of_StyleGAN_CVPR_2020_paper.html)
+
 <!-- [ALGORITHM] -->
-```latex
-@inproceedings{karras2020analyzing,
-  title={Analyzing and improving the image quality of stylegan},
-  author={Karras, Tero and Laine, Samuli and Aittala, Miika and Hellsten, Janne and Lehtinen, Jaakko and Aila, Timo},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={8110--8119},
-  year={2020},
-  url={https://openaccess.thecvf.com/content_CVPR_2020/html/Karras_Analyzing_and_Improving_the_Image_Quality_of_StyleGAN_CVPR_2020_paper.html},
-}
 
-```
+## Abstract
+
+<!-- [ABSTRACT] -->
+
+The style-based GAN architecture (StyleGAN) yields state-of-the-art results in data-driven unconditional generative image modeling. We expose and analyze several of its characteristic artifacts, and propose changes in both model architecture and training methods to address them. In particular, we redesign the generator normalization, revisit progressive growing, and regularize the generator to encourage good conditioning in the mapping from latent codes to images. In addition to improving image quality, this path length regularizer yields the additional benefit that the generator becomes significantly easier to invert. This makes it possible to reliably attribute a generated image to a particular network. We furthermore visualize how well the generator utilizes its output resolution, and identify a capacity problem, motivating us to train larger models for additional quality improvements. Overall, our improved model redefines the state of the art in unconditional image modeling, both in terms of existing distribution quality metrics as well as perceived image quality.
+
+<!-- [IMAGE] -->
+<div align=center>
+<img src="https://user-images.githubusercontent.com/28132635/143055738-58b15493-ab87-436d-94fd-c4c19e4a0225.JPG"/>
+</div>
+
 ## Results and Models
+
 <div align="center">
   <b> Results (compressed) from StyleGAN2 config-f trained by MMGeneration</b>
   <br/>
@@ -65,7 +68,7 @@ bash tools/dist_train.sh \
   --work-dir ./work_dirs/quick-test
 ```
 
-With a simliar way, users can switch to [config for partial-GD](https://github.com/open-mmlab/mmgeneration/tree/master/configs/styleganv2/stylegan2_c2_fp16_quicktest_ffhq_256_b4x8_800k.py) and [config for globalG-partialD](https://github.com/open-mmlab/mmgeneration/tree/master/configs/styleganv2/stylegan2_c2_fp16-globalG-partialD_PL-R1-no-scaler_ffhq_256_b4x8_800k.py) to test the other two mixed precision training configuration.
+With a similar way, users can switch to [config for partial-GD](https://github.com/open-mmlab/mmgeneration/tree/master/configs/styleganv2/stylegan2_c2_fp16_quicktest_ffhq_256_b4x8_800k.py) and [config for globalG-partialD](https://github.com/open-mmlab/mmgeneration/tree/master/configs/styleganv2/stylegan2_c2_fp16-globalG-partialD_PL-R1-no-scaler_ffhq_256_b4x8_800k.py) to test the other two mixed precision training configuration.
 
 
 *Note that to use the [APEX](https://github.com/NVIDIA/apex) toolkit, you have to installed it following the official guidance. (APEX is not included in our requirements.) If you are using GPUs without tensor core, you would better to switch to the newer PyTorch version (>= 1.7,0). Otherwise, the APEX installation or running may meet several bugs.*
@@ -95,3 +98,16 @@ More precalculated inception pickle files are listed here:
 | stylegan2_config-f_ffhq_1024 (official weight) | use PyTorch's VGG16, P&R50k_full |  67.662   | 55.460 |
 
 As shown in this table, `P&R50k_full` is the metric used in StyleGANv1 and StyleGANv2. `full` indicates that we use the whole dataset for extracting the real distribution, e.g., 70000 images in FFHQ dataset. However, adopting the VGG16 provided from [Tero](https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/metrics/vgg16.pt) requires that your PyTorch version must fulfill `>=1.6.0`. Be careful about using the PyTorch's VGG16 to extract features, which will cause higher precision and recall.
+
+## Citation
+
+```latex
+@inproceedings{karras2020analyzing,
+  title={Analyzing and improving the image quality of stylegan},
+  author={Karras, Tero and Laine, Samuli and Aittala, Miika and Hellsten, Janne and Lehtinen, Jaakko and Aila, Timo},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={8110--8119},
+  year={2020},
+  url={https://openaccess.thecvf.com/content_CVPR_2020/html/Karras_Analyzing_and_Improving_the_Image_Quality_of_StyleGAN_CVPR_2020_paper.html},
+}
+```

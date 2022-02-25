@@ -1,17 +1,19 @@
-# Positional Encoding as Spatial Inductive Bias in GANs (CVPR'2021)
+# Positional Encoding in GANs
 
-## Introduction
+> [Positional Encoding as Spatial Inductive Bias in GANs](https://openaccess.thecvf.com/content/CVPR2021/html/Xu_Positional_Encoding_As_Spatial_Inductive_Bias_in_GANs_CVPR_2021_paper.html)
+
 <!-- [ALGORITHM] -->
 
-```latex
-@article{xu2020positional,
-  title={Positional Encoding as Spatial Inductive Bias in GANs},
-  author={Xu, Rui and Wang, Xintao and Chen, Kai and Zhou, Bolei and Loy, Chen Change},
-  journal={arXiv preprint arXiv:2012.05217},
-  year={2020},
-  url={https://openaccess.thecvf.com/content/CVPR2021/html/Xu_Positional_Encoding_As_Spatial_Inductive_Bias_in_GANs_CVPR_2021_paper.html},
-}
-```
+## Abstract
+
+<!-- [ABSTRACT] -->
+
+SinGAN shows impressive capability in learning internal patch distribution despite its limited effective receptive field. We are interested in knowing how such a translation-invariant convolutional generator could capture the global structure with just a spatially i.i.d. input. In this work, taking SinGAN and StyleGAN2 as examples, we show that such capability, to a large extent, is brought by the implicit positional encoding when using zero padding in the generators. Such positional encoding is indispensable for generating images with high fidelity. The same phenomenon is observed in other generative architectures such as DCGAN and PGGAN. We further show that zero padding leads to an unbalanced spatial bias with a vague relation between locations. To offer a better spatial inductive bias, we investigate alternative positional encodings and analyze their effects. Based on a more flexible positional encoding explicitly, we propose a new multi-scale training strategy and demonstrate its effectiveness in the state-of-the-art unconditional generator StyleGAN2. Besides, the explicit spatial inductive bias substantially improve SinGAN for more versatile image manipulation.
+
+<!-- [IMAGE] -->
+<div align=center>
+<img src="https://user-images.githubusercontent.com/28132635/143053767-c6a503b2-87ff-434a-a439-d9fb0e98d804.JPG"/>
+</div>
 
 ## Results and models for MS-PIE
 
@@ -38,9 +40,8 @@
 | ms-pie_stylegan2_c2_config-f | higher-resolution  | 256, 512, 896  |  4.10  | 72.21/50.29 | [config](https://github.com/open-mmlab/mmgeneration/tree/master/configs/positional_encoding_in_gans/mspie-stylegan2_c2_config-f_ffhq_256-896_b3x8_1100k.py)  | [model](https://download.openmmlab.com/mmgen/pe_in_gans/mspie-stylegan2_c2_config-f_ffhq_256-896_b3x8_1100k_20210406_144943-6c18ad5d.pth)  |
 | ms-pie_stylegan2_c1_config-f | higher-resolution  | 256, 512, 1024 |  6.24  | 71.79/49.92 | [config](https://github.com/open-mmlab/mmgeneration/tree/master/configs/positional_encoding_in_gans/mspie-stylegan2_c1_config-f_ffhq_256-1024_b2x8_1600k.py) | [model](https://download.openmmlab.com/mmgen/pe_in_gans/mspie-stylegan2_c1_config-f_ffhq_256-1024_b2x8_1600k_20210406_144716-81cbdc96.pth) |
 
-
-
 Note that we report the FID and P&R metric (FFHQ dataset) in the largest scale.
+
 ## Results and Models for SinGAN
 
 <div align="center">
@@ -60,3 +61,15 @@ Note that we report the FID and P&R metric (FFHQ dataset) in the largest scale.
 |        SinGAN + SPE-dim4        |  [fish.jpg](https://download.openmmlab.com/mmgen/dataset/singan/fish-crop.jpg)   |     10     |         [config](https://github.com/open-mmlab/mmgeneration/tree/master/configs/positional_encoding_in_gans/singan_spe-dim4_fish.py)         |                 [ckpt](https://download.openmmlab.com/mmgen/pe_in_gans/singan_spe-dim4_fish_20210406_175933-f483a7e3.pth) &#124; [pkl](https://download.openmmlab.com/mmgen/pe_in_gans/singan_spe-dim4_fish_20210406_175933-f483a7e3.pkl)                 |
 |        SinGAN + SPE-dim4        | [bohemian.png](https://download.openmmlab.com/mmgen/dataset/singan/bohemian.png) |     10     |       [config](https://github.com/open-mmlab/mmgeneration/tree/master/configs/positional_encoding_in_gans/singan_spe-dim4_bohemian.py)       |             [ckpt](https://download.openmmlab.com/mmgen/pe_in_gans/singan_spe-dim4_bohemian_20210406_175820-6e484a35.pth) &#124; [pkl](https://download.openmmlab.com/mmgen/pe_in_gans/singan_spe-dim4_bohemian_20210406_175820-6e484a35.pkl)             |
 |        SinGAN + SPE-dim8        | [bohemian.png](https://download.openmmlab.com/mmgen/dataset/singan/bohemian.png) |     10     |       [config](https://github.com/open-mmlab/mmgeneration/tree/master/configs/positional_encoding_in_gans/singan_spe-dim8_bohemian.py)       |             [ckpt](https://download.openmmlab.com/mmgen/pe_in_gans/singan_spe-dim8_bohemian_20210406_175858-7faa50f3.pth) &#124; [pkl](https://download.openmmlab.com/mmgen/pe_in_gans/singan_spe-dim8_bohemian_20210406_175858-7faa50f3.pkl)             |
+
+## Citation
+
+```latex
+@article{xu2020positional,
+  title={Positional Encoding as Spatial Inductive Bias in GANs},
+  author={Xu, Rui and Wang, Xintao and Chen, Kai and Zhou, Bolei and Loy, Chen Change},
+  journal={arXiv preprint arXiv:2012.05217},
+  year={2020},
+  url={https://openaccess.thecvf.com/content/CVPR2021/html/Xu_Positional_Encoding_As_Spatial_Inductive_Bias_in_GANs_CVPR_2021_paper.html},
+}
+```

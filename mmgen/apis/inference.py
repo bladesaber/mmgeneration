@@ -46,11 +46,11 @@ def init_model(config, checkpoint=None, device='cuda:0', cfg_options=None):
 
 
 @torch.no_grad()
-def sample_uncoditional_model(model,
-                              num_samples=16,
-                              num_batches=4,
-                              sample_model='ema',
-                              **kwargs):
+def sample_unconditional_model(model,
+                               num_samples=16,
+                               num_batches=4,
+                               sample_model='ema',
+                               **kwargs):
     """Sampling from unconditional models.
 
     Args:
@@ -67,7 +67,7 @@ def sample_uncoditional_model(model,
     """
     # set eval mode
     model.eval()
-    # constrcut sampling list for batches
+    # construct sampling list for batches
     n_repeat = num_samples // num_batches
     batches_list = [num_batches] * n_repeat
 
@@ -111,7 +111,7 @@ def sample_conditional_model(model,
     """
     # set eval mode
     model.eval()
-    # constrcut sampling list for batches
+    # construct sampling list for batches
     n_repeat = num_samples // num_batches
     batches_list = [num_batches] * n_repeat
 
@@ -181,7 +181,7 @@ def sample_conditional_model(model,
     return results
 
 
-def sample_img2img_model(model, image_path, target_domain, **kwargs):
+def sample_img2img_model(model, image_path, target_domain=None, **kwargs):
     """Sampling from translation models.
 
     Args:
@@ -192,13 +192,24 @@ def sample_img2img_model(model, image_path, target_domain, **kwargs):
         Tensor: Translated image tensor.
     """
     assert isinstance(model, BaseTranslationModel)
-    assert target_domain in model._reachable_domains
+
+    # get source domain and target domain
+    if target_domain is None:
+        target_domain = model._default_domain
+    source_domain = model.get_other_domains(target_domain)[0]
+
     cfg = model._cfg
     device = next(model.parameters()).device  # model device
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
+
     # prepare data
-    data = dict(image_path=image_path)
+    data = dict()
+    # dirty code to deal with test data pipeline
+    data['pair_path'] = image_path
+    data[f'img_{source_domain}_path'] = image_path
+    data[f'img_{target_domain}_path'] = image_path
+
     data = test_pipeline(data)
     if device.type == 'cpu':
         data = collate([data], samples_per_gpu=1)
@@ -206,19 +217,81 @@ def sample_img2img_model(model, image_path, target_domain, **kwargs):
     else:
         data = scatter(collate([data], samples_per_gpu=1), [device])[0]
 
-    if target_domain is None:
-        target_domain = model._default_domain
-
-    # dirty code to deal with paired data
-    if f'img_{target_domain}' in data.keys():
-        source_domain = model.get_other_domains(target_domain)[0]
-        data['image'] = data[f'img_{source_domain}']
+    source_image = data[f'img_{source_domain}']
     # forward the model
     with torch.no_grad():
         results = model(
-            data['image'],
+            source_image,
             test_mode=True,
             target_domain=target_domain,
             **kwargs)
     output = results['target']
     return output
+
+
+@torch.no_grad()
+def sample_ddpm_model(model,
+                      num_samples=16,
+                      num_batches=4,
+                      sample_model='ema',
+                      same_noise=False,
+                      **kwargs):
+    """Sampling from ddpm models.
+
+    Args:
+        model (nn.Module): DDPM models in MMGeneration.
+        num_samples (int, optional): The total number of samples.
+            Defaults to 16.
+        num_batches (int, optional): The number of batch size for inference.
+            Defaults to 4.
+        sample_model (str, optional): Which model you want to use. ['ema',
+            'orig']. Defaults to 'ema'.
+        noise_batch (torch.Tensor): Noise batch used as denoising starting up.
+            Defaults to None.
+
+    Returns:
+        list[Tensor | dict]: Generated image tensor.
+    """
+    model.eval()
+
+    n_repeat = num_samples // num_batches
+    batches_list = [num_batches] * n_repeat
+
+    if num_samples % num_batches > 0:
+        batches_list.append(num_samples % num_batches)
+
+    noise_batch = torch.randn(model.image_shape) if same_noise else None
+
+    res_list = []
+    # inference
+    for idx, batches in enumerate(batches_list):
+        mmcv.print_log(
+            f'Start to sample batch [{idx+1} / '
+            f'{len(batches_list)}]', 'mmgen')
+        noise_batch_ = noise_batch[None, ...].expand(batches, -1, -1, -1) \
+            if same_noise else None
+
+        res = model.sample_from_noise(
+            noise_batch_,
+            num_batches=batches,
+            sample_model=sample_model,
+            show_pbar=True,
+            **kwargs)
+        if isinstance(res, dict):
+            res = {k: v.cpu() for k, v in res.items()}
+        elif isinstance(res, torch.Tensor):
+            res = res.cpu()
+        else:
+            raise ValueError('Sample results should be \'dict\' or '
+                             f'\'torch.Tensor\', but receive \'{type(res)}\'')
+        res_list.append(res)
+
+    # gather the res_list
+    if isinstance(res_list[0], dict):
+        res_dict = dict()
+        for t in res_list[0].keys():
+            # num_samples x 3 x H x W
+            res_dict[t] = torch.cat([res[t] for res in res_list], dim=0)
+        return res_dict
+    else:
+        return torch.cat(res_list, dim=0)

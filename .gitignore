@@ -65,8 +65,8 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
-docs_zh-CN/_build/
+docs/en/_build/
+docs/zh_cn/_build/
 # PyBuilder
 target/
 
@@ -114,8 +114,12 @@ data
 *.log.json
 work_dirs/
 *.DS_Store
+
 # PyTorch
 *.pth
 mmgen/configs/
 mmgen/tools/
 runs/
+
+# Pytorch Server
+*.mar

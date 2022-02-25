@@ -1,5 +1,5 @@
 _base_ = [
-    '../_base_/models/singan.py', '../_base_/datasets/singan.py',
+    '../_base_/models/singan/singan.py', '../_base_/datasets/singan.py',
     '../_base_/default_runtime.py'
 ]
 
@@ -19,7 +19,8 @@ train_cfg = dict(
 # )
 
 data = dict(
-    train=dict(img_path='./data/singan/fish.png', min_size=25, max_size=300))
+    train=dict(
+        img_path='./data/singan/fish-crop.jpg', min_size=25, max_size=300))
 
 optimizer = None
 lr_config = None

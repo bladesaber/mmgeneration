@@ -1,8 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from .arcface import IDLossModel
 from .biggan import (BigGANDeepDiscriminator, BigGANDeepGenerator,
                      BigGANDiscriminator, BigGANGenerator, SNConvModule)
 from .cyclegan import ResnetGenerator
 from .dcgan import DCGANDiscriminator, DCGANGenerator
+from .ddpm import DenoisingUnet
 from .fid_inception import InceptionV3
 from .lpips import PerceptualLoss
 from .lsgan import LSGANDiscriminator, LSGANGenerator
@@ -17,7 +19,8 @@ from .singan import SinGANMultiScaleDiscriminator, SinGANMultiScaleGenerator
 from .sngan_proj import ProjDiscriminator, SNGANGenerator
 from .stylegan import (MSStyleGAN2Discriminator, MSStyleGANv2Generator,
                        StyleGAN1Discriminator, StyleGAN2Discriminator,
-                       StyleGANv1Generator, StyleGANv2Generator)
+                       StyleGANv1Generator, StyleGANv2Generator,
+                       StyleGANv3Generator)
 from .wgan_gp import WGANGPDiscriminator, WGANGPGenerator
 
 __all__ = [
@@ -34,5 +37,6 @@ __all__ = [
     'PerceptualLoss', 'WGANGPDiscriminator', 'WGANGPGenerator',
     'LSGANDiscriminator', 'LSGANGenerator', 'ProjDiscriminator',
     'SNGANGenerator', 'BigGANGenerator', 'SNConvModule', 'BigGANDiscriminator',
-    'BigGANDeepGenerator', 'BigGANDeepDiscriminator'
+    'BigGANDeepGenerator', 'BigGANDeepDiscriminator', 'DenoisingUnet',
+    'StyleGANv3Generator', 'IDLossModel'
 ]

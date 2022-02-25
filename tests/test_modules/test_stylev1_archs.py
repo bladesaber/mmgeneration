@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from copy import deepcopy
 
 import pytest
@@ -178,6 +179,19 @@ class TestStyleGAN1Generator:
             n_source=4,
             n_target=4)
         assert style_mixing_images.shape == (25, 3, 32, 32)
+
+        # set mix_prob as 1.0 and 0.0 to force cover lines
+        cfg_ = deepcopy(self.default_cfg)
+        cfg_['mix_prob'] = 1
+        g = StyleGANv1Generator(**cfg_)
+        res = g(None, num_batches=2)
+        assert res.shape == (2, 3, 256, 256)
+
+        cfg_ = deepcopy(self.default_cfg)
+        cfg_['mix_prob'] = 0
+        g = StyleGANv1Generator(**cfg_)
+        res = g(None, num_batches=2)
+        assert res.shape == (2, 3, 256, 256)
 
 
 class TestStyleGANv1Disc:

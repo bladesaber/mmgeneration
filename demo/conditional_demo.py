@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 import os
 import sys
@@ -21,7 +22,7 @@ def parse_args():
         '--save-path',
         type=str,
         default='./work_dirs/demos/conditional_samples.png',
-        help='path to save uncoditional samples')
+        help='path to save unconditional samples')
     parser.add_argument(
         '--device', type=str, default='cuda:0', help='CUDA device id')
 

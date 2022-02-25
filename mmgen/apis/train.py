@@ -19,7 +19,7 @@ from mmgen.utils import get_root_logger
 def set_random_seed(seed, deterministic=False, use_rank_shift=True):
     """Set random seed.
 
-    In this function, we just modify the default behavior of the simliar
+    In this function, we just modify the default behavior of the similar
     function defined in MMCV.
 
     Args:
@@ -81,6 +81,7 @@ def train_model(model,
         _use_apex_amp = True
 
     # put model on gpus
+
     if distributed:
         find_unused_parameters = cfg.get('find_unused_parameters', False)
         use_ddp_wrapper = cfg.get('use_ddp_wrapper', False)
@@ -100,8 +101,7 @@ def train_model(model,
                 broadcast_buffers=False,
                 find_unused_parameters=find_unused_parameters)
     else:
-        model = MMDataParallel(
-            model.cuda(cfg.gpu_ids[0]), device_ids=cfg.gpu_ids)
+        model = MMDataParallel(model, device_ids=cfg.gpu_ids)
 
     # allow users to define the runner
     if cfg.get('runner', None):
@@ -167,14 +167,15 @@ def train_model(model,
             'samples_per_gpu': 1,
             'shuffle': False,
             'workers_per_gpu': cfg.data.workers_per_gpu,
+            'persistent_workers': cfg.data.get('persistent_workers', False),
             **cfg.data.get('val_data_loader', {})
         }
         val_dataloader = build_dataloader(
             val_dataset, dist=distributed, **val_loader_cfg)
         eval_cfg = deepcopy(cfg.get('evaluation'))
+        priority = eval_cfg.pop('priority', 'LOW')
         eval_cfg.update(dict(dist=distributed, dataloader=val_dataloader))
         eval_hook = build_from_cfg(eval_cfg, HOOKS)
-        priority = eval_cfg.pop('priority', 'NORMAL')
         runner.register_hook(eval_hook, priority=priority)
 
     # user-defined hooks
